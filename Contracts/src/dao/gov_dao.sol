@@ -9,7 +9,7 @@ contract DAO {
     mapping(address => bool) internal s_boardMembers;
     uint256 private s_numOfBoardMembers;
     uint256 s_bankValue; 
-    MaterialProposal[] private materialProposals;
+    MaterialProposal[] private s_materialProposals;
     uint256 private s_numOfDeletedMaterialProposals;
     SpendMoney[] private spendMoneyProposals;
     uint256 private s_numOfDeletedMoneyProposals;
@@ -88,8 +88,18 @@ contract DAO {
         tokenHolder
     {
         Entry memory temp = Entry(_name, _author, _medium, _hashCode);
-        materialProposals.push(MaterialProposal(temp, msg.sender, 1, 0));
+        s_materialProposals.push(MaterialProposal(temp, msg.sender, 1, 0));
         emit NewMaterialProposal(temp, msg.sender);
+    }
+
+    function voteAddMaterial(
+        uint256 _arrayIndex, 
+        bool yayNay
+    )
+        external
+        tokenHolder
+    {
+        yayNay ? ++s_materialProposals[_arrayIndex].votesYay : ++s_materialProposals[_arrayIndex].votesNay;
     }
 
     function spendMoneyProposal(
