@@ -11,7 +11,7 @@ contract DAO {
     uint256 s_bankValue; 
     MaterialProposal[] private s_materialProposals;
     uint256 private s_numOfDeletedMaterialProposals;
-    SpendMoney[] private spendMoneyProposals;
+    SpendMoney[] private s_spendMoneyProposals;
     uint256 private s_numOfDeletedMoneyProposals;
 
     error NotTokenHolder();
@@ -110,7 +110,7 @@ contract DAO {
         external 
         boardMember
     {
-        
+        s_spendMoneyProposals.push(SpendMoney(_reason, _to, _value, msg.sender));
     }
 
     function voteMoneySpend(
