@@ -13,6 +13,7 @@ contract AlexandriaDAO {
     uint256 private s_numOfDeletedMoneyProposals;
     IDatabase private s_database;
     mapping(address => uint256) private s_votesForBoard;
+    mapping(uint256 => bool) private s_exclusions;
 
     error NotBoardMember();
     error AlreadyExecuted();
@@ -89,7 +90,7 @@ contract AlexandriaDAO {
         s_bankValue += msg.value;
         emit Donated(msg.sender, msg.value);
     }
-
+s
     /**
      * @notice Allows anyone to donate to the DAO
      */
@@ -186,25 +187,33 @@ contract AlexandriaDAO {
         uint256 _arrayRangeEnd,
         uint256[] memory _exclusionsInRange
     ) external boardMember {
+        for (uint256 i = 0; i < _exclusionsInRange.length; i++) {
+            s_exclusions[_exclusionsInRange[i]] = true;
+        }
+
+        // Vote on the range of proposals
         for (uint256 i = _arrayRangeStart; i < _arrayRangeEnd; i++) {
-            if (s_entryProposals[i].votes == 0) {
-                revert AlreadyExecuted();
+            if (!s_exclusions[i]) {
+                internalVoteOnProposal(i);
             }
+        }
 
-            bool isExcluded = false;
+        // Clear the exclusions mapping
+        for (uint256 i = 0; i < _exclusionsInRange.length; i++) {
+            delete s_exclusions[_exclusionsInRange[i]];
+        }
+    }
 
-            for (uint256 j = 0; j < _exclusionsInRange.length; j++) {
-                if (i == _exclusionsInRange[j]) {
-                    isExcluded = true;
-                    break;
-                }
-            }
-            if (!isExcluded) {
-                s_entryProposals[i].votes++;
-            }
-            if (s_entryProposals[i].votes > s_numOfBoardMembers / 2) {
-                internalExecuteEntryAdd(i);
-            }
+    function internalVoteOnProposal(uint256 _proposalIndex) internal {
+
+        if (s_entryProposals[_proposalIndex].votes == 0) {
+            revert AlreadyExecuted();
+        }
+
+        s_entryProposals[_proposalIndex].votes++;
+
+        if (s_entryProposals[_proposalIndex].votes > s_numOfBoardMembers / 2) {
+            internalExecuteEntryAdd(_proposalIndex);
         }
     }
 
