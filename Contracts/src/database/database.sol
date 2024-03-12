@@ -15,15 +15,7 @@ contract Database {
     error NotOwner();
     error NotDAO();
 
-    event AddedEntry(
-        string name,
-        string author,
-        string medium,
-        uint256 yearReleased,
-        uint256 edition,
-        string language,
-        string cid
-    );
+    event AddedEntry(Entry newEntry);
 
     struct Entry{
         string name;
@@ -44,45 +36,36 @@ contract Database {
 
     /**
      * 
-     * @param _name The name or title of the entry
-     * @param _author The author of the entry
-     * @param _medium The medium of the entry, ex. book, paper, etc.
-     * @param _yearReleased The year the entry was released
-     * @param _edition The edition number of the entry
-     * @param _language The language the entry is in
-     * @param _cid The IPFS cid of the entry
+     * @param _entry The Entry struct
      * 
      * @return bool
      * 
      * @notice Adds an entry to the database. Only to be called by the DAO
      */
     function addEntry(
-        string calldata _name,
-        string calldata _author,
-        string calldata _medium,
-        uint256 _yearReleased,
-        uint256 _edition,
-        string calldata _language,
-        string calldata _cid
+        Entry calldata _entry
     ) public returns(bool){
         if(msg.sender != s_dao){
             revert NotDAO();
         }
 
-        if(s_entryByCID[_cid] != 0){
+        if(s_entryByCID[_entry.cid] != 0){
             return false;
         }
 
-        Entry memory entry = Entry(_name, _author, _medium, _yearReleased, _edition, _language,  _cid);
-        s_entries.push(entry);
+        s_entries.push(_entry);
 
-        s_entryByCID[_cid] = s_entries.length - 1;
-        s_entryByAuthor[_author].push(_cid);
-        s_entryByName[_name].push(_cid);
+        internalAddEntryToSearchMappings(_entry);
 
-        emit AddedEntry(_name, _author, _medium, _yearReleased, _edition, _language,  _cid);
+        emit AddedEntry(_entry);
 
         return true;
+    }
+
+    function internalAddEntryToSearchMappings(Entry calldata _entry) internal {
+        s_entryByCID[_entry.cid] = s_entries.length - 1;
+        s_entryByAuthor[_entry.author].push(_entry.cid);
+        s_entryByName[_entry.name].push(_entry.cid);
     }
 
     //Searches by Name or Author and returns an array of Entry structs
@@ -97,8 +80,14 @@ contract Database {
      * 
      * @return Entry[] An array of Entry structs
      * 
-     * @notice Searches the database for entries that match the search term and returns an array of Entry structs.
-     * Only needs to be used if you cannot access https://library-of-alexandria.xyz/
+     * @notice Searches by Name or Author and returns an array of Entry structs
+     * Search terms must be in lower case with no spaces and if there are numbers in 
+     * the original title leave them as numbers, for example "Farenheit 451" would be
+     * converted to farenheit451
+     * 
+     * @dev Will always return Name matches before Author matches
+     * 
+     * @notice Only needs to be used if you cannot access https://library-of-alexandria.xyz/
      */
     function search(string calldata _search) external view returns(Entry[] memory){
         Entry[] memory end;

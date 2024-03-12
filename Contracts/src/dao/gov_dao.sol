@@ -90,7 +90,7 @@ contract AlexandriaDAO {
         s_bankValue += msg.value;
         emit Donated(msg.sender, msg.value);
     }
-s
+
     /**
      * @notice Allows anyone to donate to the DAO
      */

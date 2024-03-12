@@ -25,6 +25,7 @@ contract AlexandriaDAOTest is Test {
         boardMembers = [address(1), address(2), address(3)];
         database = new Database();
         alexandriaDAO = new AlexandriaDAO(boardMembers, address(database));
+        database.setDao(address(alexandriaDAO));
         nonBoardMember = address(4);
     }
 
@@ -41,6 +42,7 @@ contract AlexandriaDAOTest is Test {
         uint256 arrayIndex,
         address sender
     );
+
     // Test addMaterial function
     function testAddMaterial() public {
         vm.prank(boardMembers[0]);
@@ -75,20 +77,20 @@ contract AlexandriaDAOTest is Test {
         // Add assertions to check the state after voting
     }
 
-    // Test voteBulkAddMaterial function
-    // function testVoteBulkAddMaterial() public {
-    //     AlexandriaDAO.Entry[] memory entries = new AlexandriaDAO.Entry[](2);
-    //     entries[0] = AlexandriaDAO.Entry("Name1", "Author1", "Medium1", 2023, 1, "Language1", "CID1");
-    //     entries[1] = AlexandriaDAO.Entry("Name2", "Author2", "Medium2", 2023, 1, "Language2", "CID2");
+    //Test voteBulkAddMaterial function
+    function testVoteBulkAddMaterial() public {
+        AlexandriaDAO.Entry[] memory entries = new AlexandriaDAO.Entry[](2);
+        entries[0] = AlexandriaDAO.Entry("Name1", "Author1", "Medium1", 2023, 1, "Language1", "CID1");
+        entries[1] = AlexandriaDAO.Entry("Name2", "Author2", "Medium2", 2023, 1, "Language2", "CID2");
         
-    //     vm.prank(boardMembers[0]);
-    //     alexandriaDAO.bulkAddMaterial(entries);
+        vm.prank(boardMembers[0]);
+        alexandriaDAO.bulkAddMaterial(entries);
 
-    //     uint256[] memory exclusions = new uint256[](0);
-    //     vm.prank(boardMembers[1]);
-    //     alexandriaDAO.voteBulkAddMaterial(0, 2, exclusions);
-    //     // Add assertions to check the state after bulk voting
-    // }
+        uint256[] memory exclusions = new uint256[](0);
+        vm.prank(boardMembers[1]);
+        alexandriaDAO.voteBulkAddMaterial(0, 2, exclusions);
+        // Add assertions to check the state after bulk voting
+    }
 
     // Test spendMoneyProposal function
     function testSpendMoneyProposal() public {
