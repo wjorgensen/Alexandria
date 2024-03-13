@@ -1,12 +1,21 @@
+import s from "./index.module.scss";
 import Image from "next/image";
-import { Inter } from "next/font/google";
 
-const inter = Inter({ subsets: ["latin"] });
-
-export default function Home() {
+export default function Index() {
   return (
-    <main className={`${inter.className}`}>
-
+    <main className={s.main}>
+      <h1 className={s.alexandria}>ALEXANDRIA</h1>
+      <div className={s.search}>
+        <input type="text" placeholder="Search Literature" />
+        <button>Search</button>
+      </div>
+      <div className={s.library}>
+        <Image src="/Ancient.jpg" alt="Alexandria Library" width={500} height={500} />
+        <p>
+          In the year 48 BC, flames devoured the Library of Alexandria, an unparalleled citadel of wisdom, reducing centuries of accumulated knowledge to ashes. Inspired by this monumental beacon of erudition that was tragically extinguished by the whims of fate, we have christened our new sanctum of learning "Alexandria" in solemn tribute. This modern Alexandria is not merely a homage to the past; it is a defiant stand against the ravages of time, calamity, and those who wish to stop the flow of knowledge. Anchored in the immutable bedrock of blockchain technology, our library is designed to be an indestructible vault of knowledge, a testament to the enduring human spirit of preservation and enlightenment. As long as the blockchain endures, Alexandria shall remain invincible, a phoenix arisen from the ashes of its ancient namesake, offering a sanctuary of wisdom to the ages.
+        </p>
+      </div>
+      
     </main>
   );
 }
