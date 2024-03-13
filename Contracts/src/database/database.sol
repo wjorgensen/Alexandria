@@ -22,7 +22,6 @@ contract Database {
         string author;
         string medium;
         uint256 yearReleased;
-        uint256 edition;
         string language;
         string cid;
     }

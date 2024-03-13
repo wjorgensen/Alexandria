@@ -2,53 +2,46 @@
 pragma solidity ^0.8.0;
 
 interface IDatabase {
-    // Event declaration
-    event AddedEntry(
-        string name,
-        string author,
-        string medium,
-        uint256 yearReleased,
-        uint256 edition,
-        string language,
-        string cid
-    );
-
-    // Struct declaration
     struct Entry {
         string name;
         string author;
         string medium;
         uint256 yearReleased;
-        uint256 edition;
         string language;
         string cid;
     }
 
-    /**
-     * @notice Adds an entry to the database. Only to be called by the DAO.
-     */
-    function addEntry(
-        string calldata _name,
-        string calldata _author,
-        string calldata _medium,
-        uint256 _yearReleased,
-        uint256 _edition,
-        string calldata _language,
-        string calldata _cid
-    ) external returns (bool);
+    event AddedEntry(Entry newEntry);
 
     /**
-     * @notice Searches the database for entries that match the search term and returns an array of Entry structs.
+     * @notice Adds an entry to the database. Only to be called by the DAO.
+     * @param _entry The Entry struct.
+     * @return bool
+     */
+    function addEntry(Entry calldata _entry) external returns (bool);
+
+    /**
+     * @notice Searches by Name or Author and returns an array of Entry structs.
+     * Search terms must be in lower case with no spaces and if there are numbers in
+     * the original title leave them as numbers, for example "Farenheit 451" would be
+     * converted to farenheit451.
+     * @dev Will always return Name matches before Author matches.
+     * @param _search The search term.
+     * @return Entry[] An array of Entry structs.
+     * @notice Only needs to be used if you cannot access https://library-of-alexandria.xyz/.
      */
     function search(string calldata _search) external view returns (Entry[] memory);
 
     /**
      * @notice Dumps the entire database and returns an array of Entry structs.
+     * Primarily used for setup of the website or if you would like to fork the database and add it to another chain.
+     * @return Entry[] An array of Entry structs.
      */
     function dump() external view returns (Entry[] memory);
 
     /**
      * @notice Sets the DAO address. Only to be called once.
+     * @param _dao The address of the DAO.
      */
     function setDao(address _dao) external;
 }

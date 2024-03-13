@@ -6,7 +6,7 @@ import {IDatabase} from "../interfaces/database_interface.sol";
 contract AlexandriaDAO {
     mapping(address => bool) internal s_boardMembers;
     uint256 private s_numOfBoardMembers;
-    uint256 s_bankValue;
+    uint256 public s_bankValue;
     EntryProposal[] private s_entryProposals;
     uint256 private s_numofDeletedEntryProposals;
     SpendMoney[] private s_spendMoneyProposals;
@@ -51,7 +51,6 @@ contract AlexandriaDAO {
         string author;
         string medium;
         uint256 yearReleased;
-        uint256 edition;
         string language;
         string cid;
     }
@@ -107,36 +106,15 @@ contract AlexandriaDAO {
 
     /**
      * 
-     * @param _name Name of the entry
-     * @param _author Author of the entry
-     * @param _medium Medium of the entry
-     * @param _yearReleased The year the entry was released
-     * @param _edition The edition number of the entry
-     * @param _language The language the entry is in
-     * @param _cid The IPFS cid of the entry
+     * @param _newEntry Entry to be added to the database
      * 
-     * @notice Adds an entry to the database. Only to be called by Board Members
+     * @notice Adds an entry to be voted on. Only to be called by Board Members
      */
     function addMaterial(
-        string calldata _name,
-        string calldata _author,
-        string calldata _medium,
-        uint256 _yearReleased,
-        uint256 _edition,
-        string calldata _language,
-        string calldata _cid
+        Entry calldata _newEntry
     ) external boardMember {
-        Entry memory temp = Entry(
-            _name,
-            _author,
-            _medium,
-            _yearReleased,
-            _edition,
-            _language,
-            _cid
-        );
-        s_entryProposals.push(EntryProposal(temp, msg.sender, 1));
-        emit NewMaterialProposal(temp, s_entryProposals.length - 1, msg.sender);
+        s_entryProposals.push(EntryProposal(_newEntry, msg.sender, 1));
+        emit NewMaterialProposal(_newEntry, s_entryProposals.length - 1, msg.sender);
     }
 
     /**
@@ -224,15 +202,17 @@ contract AlexandriaDAO {
      * @notice Internal function to execute adding a material to the database
      */
     function internalExecuteEntryAdd(uint256 _arrayIndex) internal {
-        bool success = s_database.addEntry(
+
+        IDatabase.Entry memory temp = IDatabase.Entry(
             s_entryProposals[_arrayIndex].newEntry.name,
             s_entryProposals[_arrayIndex].newEntry.author,
             s_entryProposals[_arrayIndex].newEntry.medium,
             s_entryProposals[_arrayIndex].newEntry.yearReleased,
-            s_entryProposals[_arrayIndex].newEntry.edition,
             s_entryProposals[_arrayIndex].newEntry.language,
             s_entryProposals[_arrayIndex].newEntry.cid
         );
+
+        bool success = s_database.addEntry(temp);
 
         if (success) {
             delete s_entryProposals[_arrayIndex];

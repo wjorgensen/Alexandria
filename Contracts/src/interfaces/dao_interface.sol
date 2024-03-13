@@ -2,16 +2,10 @@
 pragma solidity ^0.8.0;
 
 interface IAlexandriaDAO {
-    // Events
-    event Donated(address donater, uint value);
-    event NewMaterialProposal(Entry newEntry, uint256 arrayIndex, address sender);
-    event NewSpendingProposal(SpendMoney newSpendMoneyProposal, uint256 arrayIndex, address sender);
-    event MoneySpendExecuted(address to, uint value);
-
     struct SpendMoney {
         string reason;
         address to;
-        uint value;
+        uint256 value;
         address creator;
         uint256 votes;
     }
@@ -21,7 +15,6 @@ interface IAlexandriaDAO {
         string author;
         string medium;
         uint256 yearReleased;
-        uint256 edition;
         string language;
         string cid;
     }
@@ -32,37 +25,45 @@ interface IAlexandriaDAO {
         uint256 votes;
     }
 
+    event Donated(address donater, uint256 value);
+    event NewMaterialProposal(Entry newEntry, uint256 arrayIndex, address sender);
+    event NewSpendingProposal(SpendMoney newSpendMoneyProposal, uint256 arrayIndex, address sender);
+    event MoneySpendExecuted(address to, uint256 value);
+
     /**
-     * @notice Allows anyone to donate to the DAO
+     * @notice Returns the current bank value of the DAO.
+     */
+    function s_bankValue() external view returns (uint256);
+
+    /**
+     * @notice Allows anyone to donate to the DAO.
      */
     function donate() external payable;
 
     /**
-     * @notice Adds an entry to the database. Only to be called by Board Members
+     * @notice Adds an entry to be voted on. Only to be called by Board Members.
+     * @param _newEntry Entry to be added to the database.
      */
-    function addMaterial(
-        string calldata _name,
-        string calldata _author,
-        string calldata _medium,
-        uint256 _yearReleased,
-        uint256 _edition,
-        string calldata _language,
-        string calldata _cid
-    ) external;
+    function addMaterial(Entry calldata _newEntry) external;
 
     /**
-     * @notice Adds an array of entries to the database. Only to be called by Board Members
+     * @notice Adds an array of entries to the database. Only to be called by Board Members.
+     * @param _newEntries Array of entries to be added to the database.
      */
     function bulkAddMaterial(Entry[] calldata _newEntries) external;
 
     /**
-     * @notice Allows board members to vote on adding a material to the database
+     * @notice Allows board members to vote on adding a material to the database.
+     * @param _arrayIndex Index of the proposal in the array of add material proposals.
      */
     function voteAddMaterial(uint256 _arrayIndex) external;
 
     /**
-     * @notice Allows board members to vote on adding a range of materials to the database
-     */ 
+     * @notice Allows board members to vote on adding a range of materials to the database.
+     * @param _arrayRangeStart The start of the range of proposals to vote on.
+     * @param _arrayRangeEnd The end of the range of proposals to vote on.
+     * @param _exclusionsInRange Any proposals in the range to exclude from voting.
+     */
     function voteBulkAddMaterial(
         uint256 _arrayRangeStart,
         uint256 _arrayRangeEnd,
@@ -70,7 +71,10 @@ interface IAlexandriaDAO {
     ) external;
 
     /**
-     * @notice Allows board members to propose spending money
+     * @notice Allows board members to propose spending money.
+     * @param _reason Reason for the spending proposal.
+     * @param _to Who will receive the funds.
+     * @param _value How much will be sent.
      */
     function spendMoneyProposal(
         string calldata _reason,
@@ -79,12 +83,14 @@ interface IAlexandriaDAO {
     ) external;
 
     /**
-     * @notice Allows board members to vote on spending money
+     * @notice Allows board members to vote on spending money.
+     * @param _arrayIndex Index of the proposal in the array of spend money proposals.
      */
     function voteMoneySpend(uint256 _arrayIndex) external;
 
     /**
-     * @notice Allows board members to vote on adding a new board member
+     * @notice Allows board members to vote on adding a new board member.
+     * @param _newMember Address of the new board member.
      */
     function addBoardMember(address _newMember) external;
 }
