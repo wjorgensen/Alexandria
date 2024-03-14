@@ -14,18 +14,6 @@ interface Entry {
   cid: string;
 }
 
-const example = [
-  {
-    title: "The Iliad",
-    author: "Homer",
-    link: "https://ipfs.io/ipfs/iliad"
-  },
-  {
-    title: "The Odyssey",
-    author: "Homer",
-    link: "https://ipfs.io/ipfs/odyssey"
-  }
-]
 
 export default function Index() {
 
