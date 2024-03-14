@@ -59,7 +59,25 @@ export default function Dao() {
         }
     }
 
+    const moniesexample = [
+        {
+            reason: "maintenance",
+            to: "0x0000000000",
+            value: 100,
+            creator: "0x1111111111",
+            votes: 0
+        },
+        {
+            reason: "acquisition",
+            to: "0x0000000000",
+            value: 100,
+            creator: "0x1111111111",
+            votes: 0
+        }
+    ]
     const [monies, setMonies] = useState<any[]>([]);
+
+
     async function getmonies() {
         try {
             const res = await daocontract.methods.getSpendMoneyProposals().call();
@@ -96,8 +114,31 @@ export default function Dao() {
         getmonies();
     }, []);
 
-
     const [donation, setDonation] = useState<number>()
+    async function donate() {
+        console.log("donating", donation);
+        try {
+            if (!donation || donation <= 0) {
+                return;
+            }
+
+            console.log("getting acc")
+            const accounts = await web3.eth.getAccounts(); 
+            if (accounts.length === 0) {
+                console.error('No account found');
+                return;
+            }
+            const account = accounts[0]; 
+
+            const donationAmount = web3.utils.toWei(donation.toString(), 'ether');
+            await daocontract.methods.donate().send({ from: account, value: donationAmount });
+
+            setDonation(undefined);
+        } catch (error) {
+            console.error('Donation error:', error);
+        }
+    }
+
 
     const OPTIONS: EmblaOptionsType = { align: 'start', loop: true }
 
@@ -136,7 +177,7 @@ export default function Dao() {
                         <p>{proposal.entry.author}</p>
                         <p>{proposal.entry.medium}</p>
                         {/* <p>{proposal.entry.year}</p> */}
-                       {/*  <p>{proposal.entry.language}</p> */}
+                        {/*  <p>{proposal.entry.language}</p> */}
                     </div>
                     <div className={s.voting}>
                         {/* <div className={s.maker}>{proposal.maker}</div> */}
@@ -148,24 +189,7 @@ export default function Dao() {
         })
     }
 
-    const moniesexample = [
-        {
-            reason: "maintenance",
-            to: "0x0000000000",
-            value: 100,
-            creator: "0x1111111111",
-            votes: 0
-        },
-        {
-            reason: "acquisition",
-            to: "0x0000000000",
-            value: 100,
-            creator: "0x1111111111",
-            votes: 0
-        }
-    ]
-
-    function monetary(): JSX.Element[] {
+    function monetaries(): JSX.Element[] {
         return moniesexample.map((money, index) => {
             return (
                 <div key={index} className={s.monetary}>
@@ -184,7 +208,6 @@ export default function Dao() {
         })
     }
 
-
     return (
         <section className={s.dao}>
             <h1 className={s.librarians}>AL(eX)AN.DAO</h1>
@@ -196,7 +219,7 @@ export default function Dao() {
                     <input type="number" value={donation} onChange={(e) => setDonation(parseInt(e.target.value))}
                         placeholder="donate"
                     />
-                    <button className={s.vote}>donate</button>
+                    <button className={s.vote} onClick={donate}>donate</button>
                 </div>
             </div>
             <Divider content="members" />
@@ -211,7 +234,7 @@ export default function Dao() {
 
             <Divider content="monetary" />
             <div className={s.library}>
-                <Carousel slides={monetary()} options={OPTIONS} type="half" />
+                <Carousel slides={monetaries()} options={OPTIONS} type="half" />
             </div>
         </section>
     );
