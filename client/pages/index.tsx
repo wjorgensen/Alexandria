@@ -277,6 +277,9 @@ export default function Index() {
                   <div key={index} className={s.book}>
                     <h2>{book.name}</h2>
                     <p>{book.author}</p>
+                    <p>{book.medium}</p>
+                    <p>{book.yearReleased}</p>
+                    <p>{book.language}</p>
                     <a href={`https://ipfs.io/ipfs/${book.cid}`} target="_blank">{book.cid}</a>
                   </div>
                 )
@@ -287,7 +290,7 @@ export default function Index() {
           <div className={s.library}>
             <Image src="/Ancient.jpg" alt="Alexandria Library" width={500} height={500} />
             <p>
-              In the year 48 BC, flames devoured the Library of Alexandria, an unparalleled citadel of wisdom, reducing centuries of accumulated knowledge to ashes. Inspired by this monumental beacon of erudition that was tragically extinguished by the whims of fate, we have christened our new sanctum of learning "Alexandria" in solemn tribute. This modern Alexandria is not merely a homage to the past; it is a defiant stand against the ravages of time, calamity, and those who wish to stop the flow of knowledge. Anchored in the immutable bedrock of blockchain technology, our library is designed to be an indestructible vault of knowledge, a testament to the enduring human spirit of preservation and enlightenment. As long as the blockchain endures, Alexandria shall remain invincible, a phoenix arisen from the ashes of its ancient namesake, offering a sanctuary of wisdom to the ages.
+            Alexandria is the world's first blockchain-based public library. At Alexandria, we believe that information should be free, easily accessible, and free from censorship. For much of the internet's history this has been the case however we've identified a flaw in the model used by platforms such as The Internet Archive and Google Scholar. These sites, despite their value, are costly to operate and maintain due to their reliance on centralized servers. While generous donations have sustained them thus far, future financial stability is uncertain. To address this, we've developed a new, more economical and sustainable method for storing digital content. Utilizing blockchain technology, specifically IPFS and an EVM-compatible chain, we can permanently archive digital information at a minimal cost. The only expense is maintaining an IPFS node, which, in our case, is a Raspberry Pi. Through this innovative approach, we aim to preserve and provide open access to a wealth of copyright-free books, news articles, research papers, and more, ensuring they remain free and accessible for everyone.
             </p>
           </div>
       }
