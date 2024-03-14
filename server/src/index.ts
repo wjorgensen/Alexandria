@@ -2,16 +2,14 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import Web3 from "web3";
-/*
- * Load up and parse configuration details from
- * the `.env` file to the `process.env`
- * object of Node.js
- */
+
+const { Conflux, Drip } = require('js-conflux-sdk');
+
+
 dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT || 5000;
-
 
 const web3 = new Web3('https://evmtestnet.confluxrpc.com');
 const dbcontractaddress = '0x2689df809bc5735334bb873e1db1a143b2e639fa';
@@ -236,12 +234,14 @@ const dbcontractABI = [
       "stateMutability": "nonpayable",
       "type": "function"
 }];
-const dbcontract = new web3.eth.Contract(dbcontractABI, dbcontractaddress)
 
-const daocontractaddress = '';
-const daocontractABI = [];
+const dbcontractcfx = new Conflux({
+  url: 'https://evmtestnet.confluxrpc.com',
+  networkId: 1,  // Note: network is required
+  logger: console, // for debug
+});
 
-dbcontract.events.AddedEntry()
+/* dbcontract.events.AddedEntry()
   .on("connected", function(subscriptionId){ 
     console.log(subscriptionId);
   })
@@ -255,7 +255,7 @@ dbcontract.events.AddedEntry()
 dbcontract.getPastEvents('AddedEntry' as any, {}, function(error: Error, events: any){ console.log(events); } as any)
 .then(function(events){
     console.log("past events", events)
-});
+}); */
 
 
 app.get("/", (req: Request, res: Response) => {
