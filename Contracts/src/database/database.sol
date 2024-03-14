@@ -83,24 +83,29 @@ contract Database {
      * 
      * @notice Only needs to be used if you cannot access https://library-of-alexandria.xyz/
      */
-    function search(string calldata _search) external view returns(Entry[] memory){
-        Entry[] memory end;
+    function search(string calldata _search) external view returns (Entry[] memory) {
+        Entry[] memory result = new Entry[](0);
 
-        if(s_entryByName[_search].length > 0){
-            string[] memory temp = s_entryByName[_search];
-            for(uint i; i < temp.length; i++){
-                end[end.length] = (s_entries[s_entryByCID[temp[i]]]);
-            }
+        string[] memory nameMatches = s_entryByName[_search];
+        for (uint i = 0; i < nameMatches.length; i++) {
+            result = appendEntry(result, s_entries[s_entryByCID[nameMatches[i]]]);
         }
 
-        if(s_entryByAuthor[_search].length > 0){
-            string[] memory temp = s_entryByAuthor[_search];
-            for(uint i; i < temp.length; i++){
-                end[end.length] = (s_entries[s_entryByCID[temp[i]]]);
-            }
+        string[] memory authorMatches = s_entryByAuthor[_search];
+        for (uint i = 0; i < authorMatches.length; i++) {
+            result = appendEntry(result, s_entries[s_entryByCID[authorMatches[i]]]);
         }
 
-        return end;
+        return result;
+    }
+
+    function appendEntry(Entry[] memory array, Entry memory entry) private pure returns (Entry[] memory) {
+        Entry[] memory newArray = new Entry[](array.length + 1);
+        for (uint i = 0; i < array.length; i++) {
+            newArray[i] = array[i];
+        }
+        newArray[array.length] = entry;
+        return newArray;
     }
 
     /**
