@@ -1,0 +1,37 @@
+.carousel {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    --slide-spacing: 1rem;
+
+    .viewport {
+        overflow: hidden;
+        width: 90%;
+        margin: 0 auto;
+
+        .emblacontainer {
+            backface-visibility: hidden;
+            display: flex;
+            touch-action: pan-y;
+            margin-left: calc(var(--slide-spacing) * -1);
+
+            .slide {
+                min-width: 0;
+                flex: 0 0 33%;
+                padding-left: var(--slide-spacing);
+
+                .number {
+                    font-size: 4rem;
+                    font-weight: 600;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    height: 120px;
+                    background-color: #295267;
+                    color: white;
+                }
+            }
+        }
+
+    }
+}

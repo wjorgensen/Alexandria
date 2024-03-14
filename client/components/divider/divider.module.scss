@@ -1,0 +1,17 @@
+.divider {
+    width: 750px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    .content {
+        margin: 0 20px;
+        text-align: center;
+    }
+
+    .bar {
+        background-color: #295267;
+        height: 2px;
+        width: 100%;
+    }
+}

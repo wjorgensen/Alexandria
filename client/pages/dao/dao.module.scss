@@ -1,0 +1,25 @@
+.dao {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    font-family: "Alexandria", sans-serif;
+    font-weight: 200;
+
+    .librarians {
+        font-size: 92px;
+    }
+
+    
+
+    .library {
+        width: 750px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+}

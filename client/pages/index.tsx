@@ -33,8 +33,8 @@ export default function Index() {
   }
 
   return (
-    <main className={s.main}>
-      <h1 className={s.alexandria}>ALEXANDRIA</h1>
+    <section className={s.main}>
+      <h1 className={s.alexandria}>AL(eX)ANDRIA</h1>
       <div className={s.search}>
         <input type="text" placeholder="Search Literature"
           value={text}
@@ -65,6 +65,6 @@ export default function Index() {
             </p>
           </div>
       }
-    </main>
+    </section>
   );
 }
