@@ -87,4 +87,14 @@ interface IAlexandriaDAO {
      * @notice Returns the current spend money proposals
      */
     function getSpendMoneyProposals() external view returns (SpendMoney[] memory);
+
+     /**
+     * @notice Returns the executed entry proposals
+     */
+    function getExecutedEntryProposals() external view returns (EntryProposal[] memory);
+
+    /**
+     * @notice Returns the executed spend money proposals
+     */
+    function getExecutedSpendMoneyProposals() external view returns (SpendMoney[] memory);
 }

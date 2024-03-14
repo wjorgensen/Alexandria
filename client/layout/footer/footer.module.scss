@@ -1,0 +1,17 @@
+.footer{
+    height: 10vh;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 2vw;
+
+    a{
+        height: 5vh;
+        width: auto;
+        margin: 0 10px;
+
+        img{
+            height: 100%;
+            width: auto;
+        }
+    }
+}

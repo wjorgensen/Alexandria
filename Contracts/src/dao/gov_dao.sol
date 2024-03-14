@@ -46,6 +46,8 @@ contract AlexandriaDAO {
         uint256 votes;
     }
 
+
+    //Before mainnet I need to combine these
     struct Entry {
         string name;
         string author;
@@ -57,7 +59,7 @@ contract AlexandriaDAO {
 
     struct EntryProposal {
         Entry newEntry;
-        address maker;
+        address creator;
         uint256 votes;
     }
 
