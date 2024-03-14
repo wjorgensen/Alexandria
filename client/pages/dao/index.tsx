@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { EmblaOptionsType } from 'embla-carousel'
 import s from "./dao.module.scss";
 import Carousel from "@/components/carousel/carousel";
@@ -17,15 +17,51 @@ export default function Dao() {
     const daocontractaddress = "0xf3c4b26f6e92d2358dc66b99fd6cc3471b531071"
     const daocontract = new web3.eth.Contract(DAOABI, daocontractaddress);
 
+    const [proposals, setProposals] = useState<any[]>([]);
     async function getproposals() {
         try {
             const res = await daocontract.methods.getEntryProposals().call();
-            console.log(res);
+
+            const newproposals = []
+
+            for (let i = 0; i < res!.length; i++) {
+                console.log((res as any)[i].creator);
+                console.log((res as any)[i].votes);
+                console.log((res as any)[i]['0'].name);
+                console.log((res as any)[i]['0'].author);
+                console.log((res as any)[i]['0'].medium);
+                console.log((res as any)[i]['0'].yearReleased);
+                console.log((res as any)[i]['0'].language);
+                console.log((res as any)[i]['0'].cid);
+                console.log("-------------------")
+
+                if ((res as any)[i]['0'].cid == "") continue;
+
+                let newproposal = {
+                    maker: (res as any)[i].creator,
+                    votes: (res as any)[i].votes.toString(),
+                    entry: {
+                        name: (res as any)[i]['0'].name,
+                        author: (res as any)[i]['0'].author,
+                        medium: (res as any)[i]['0'].medium,
+                        year: (res as any)[i]['0'].yearReleased,
+                        language: (res as any)[i]['0'].language,
+                        cid: (res as any)[i]['0'].cid
+                    }
+                }
+
+                newproposals.push(newproposal)
+            }
+
+            setProposals(newproposals);
         } catch (e) {
             console.error(e);
         }
     }
-    getproposals();
+
+    useEffect(() => {
+        getproposals();
+    }, []);
 
 
     const [donation, setDonation] = useState<number>()
@@ -57,7 +93,7 @@ export default function Dao() {
         })
     }
 
-    const proposals = [
+    /* const proposals = [
         {
             maker: "0x0000000000",
             votes: 0,
@@ -82,7 +118,7 @@ export default function Dao() {
                 cid: "Qm1234567890"
             }
         }
-    ]
+    ]*/
 
     function entries(): JSX.Element[] {
         return proposals.map((proposal, index) => {
@@ -98,7 +134,7 @@ export default function Dao() {
                     </div>
                     <div className={s.voting}>
                         {/* <div className={s.maker}>{proposal.maker}</div> */}
-                        <div className={s.votes}>- {proposal.votes} votes</div>
+                        <div className={s.votes}>{proposal.votes} votes</div>
                         <button className={s.vote}>vote</button>
                     </div>
                 </div>
@@ -134,7 +170,7 @@ export default function Dao() {
                         <div className={s.creator}>{money.creator}</div>
                     </div>
                     <div className={s.voting}>
-                        <div className={s.votes}>- {money.votes} votes</div>
+                        <div className={s.votes}>{money.votes} votes</div>
                         <button className={s.vote}>vote</button>
                     </div>
                 </div>
