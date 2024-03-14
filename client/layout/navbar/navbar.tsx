@@ -27,7 +27,10 @@ export default function Navbar() {
             <div>
                 <h1 className={s.alexandria}>AL(eX)ANDRIA</h1>
             </div>
-            {Navigation()}
+            <div>
+                <a href="https://evmtestnet.confluxscan.net/address/0xb301186922d32b9af3d5a8078090e2184c41c246?tab=contract-viewer" target="_blank"><button>contract</button></a>
+                {Navigation()}
+            </div>
         </nav>
     )
 }
