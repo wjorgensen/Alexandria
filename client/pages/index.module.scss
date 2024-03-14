@@ -60,15 +60,26 @@
         .book {
             padding: 10px 0;
             border-top: 1px solid #295267;
+            overflow: hidden;
+            text-overflow: ellipsis;
             
             h2 {
                 font-size: 20px;
                 font-weight: 300;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
             a {
                 color: #295267;
                 text-decoration: none;
                 font-weight: 300;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            p {
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             &:last-child {

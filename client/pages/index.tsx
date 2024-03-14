@@ -20,19 +20,19 @@ export default function Index() {
   const [text, setText] = useState("")
   const [results, setResults] = useState<Entry[]>([])
 
+  
+  async function search(term: string) {
+    const uri = "/api/search?query=" + term;
+    console.log(uri);
+    console.log("searching for", term);
+    try {
+      const res = await fetch(uri);
+      const { results } = await res.json();
+      setResults(results);
+    } catch (e) {
+      console.error(e);
+    }
 
-  //Need to add searching animation while its fetching from the blockchain
-  async function search(searchTerm: string) {
-    // const web3 = new Web3('https://evmtestnet.confluxrpc.com/');
-    // const contract = new web3.eth.Contract(contractABI, contractAddress);
-
-    // try {
-    //   const result = await contract.methods.search(searchTerm).call();
-    //   return result as Entry[];
-    // } catch (error) {
-    //   console.error('Error:', error);
-    //   throw error;
-    // }
   }
 
   return (
@@ -57,7 +57,7 @@ export default function Index() {
                     <p>{book.medium}</p>
                     <p>{book.yearReleased}</p>
                     <p>{book.language}</p>
-                    <a href={`https://ipfs.io/ipfs/${book.cid}`} target="_blank">{book.cid}</a>
+                    <a href={`https://ipfs.io/ipfs/${book.cid}`} target="_blank">https://ipfs.io/ipfs{book.cid}</a>
                   </div>
                 )
               })
