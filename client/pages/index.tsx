@@ -18,21 +18,26 @@ interface Entry {
 export default function Index() {
 
   const [text, setText] = useState("")
-  const [results, setResults] = useState<Entry[]>([])
-
+  const [results, setResults] = useState<Entry[] | null>()
+  const [loading, setLoading] = useState(false)
   
   async function search(term: string) {
+    setLoading(true);
     const uri = "/api/search?query=" + term;
     console.log(uri);
     console.log("searching for", term);
     try {
       const res = await fetch(uri);
       const { results } = await res.json();
-      setResults(results);
+      
+      if (results) {
+        setResults(results);
+      }
+
     } catch (e) {
       console.error(e);
     }
-
+    setLoading(false);
   }
 
   return (
@@ -46,7 +51,13 @@ export default function Index() {
         <button onClick={() => search(text)}>Search</button>
       </div>
       {
-        results.length > 0 ?
+
+        loading ?
+          <div className={s.loading}>
+            <div className={s.loader}></div>
+          </div>
+          :
+        results && results.length > 0 ?
           <div className={s.books}>
             {
               results.map((book, index) => {

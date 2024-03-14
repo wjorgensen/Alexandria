@@ -14,12 +14,14 @@
     .search {
         display: flex;
         width: 750px;
+
         input {
             width: 100%;
             border: 2px solid black;
             background-color: #e0dbd2;
             padding: 10px;
         }
+
         button {
             background-color: #295267;
             color: white;
@@ -35,6 +37,7 @@
         justify-content: center;
         align-items: center;
         padding-top: 40px;
+
         img {
             width: 100%;
             height: 300px;
@@ -42,6 +45,7 @@
             object-position: 50% 84%;
             border: 3px solid #000;
         }
+
         p {
             width: 130%;
             text-align: center;
@@ -52,23 +56,53 @@
         }
     }
 
+    .loading {
+        padding-top: 130px;
+        width: 750px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        .loader {
+            border: 4px solid #000;
+            border-top: 4px solid #295267;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    }
+
     .books {
         padding-top: 30px;
         width: 750px;
         display: flex;
         flex-direction: column;
+
         .book {
             padding: 10px 0;
             border-top: 1px solid #295267;
             overflow: hidden;
             text-overflow: ellipsis;
-            
+
             h2 {
                 font-size: 20px;
                 font-weight: 300;
                 overflow: hidden;
                 text-overflow: ellipsis;
             }
+
             a {
                 color: #295267;
                 text-decoration: none;
@@ -87,5 +121,5 @@
             }
         }
     }
-    
+
 }
