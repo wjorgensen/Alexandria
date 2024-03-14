@@ -1,6 +1,9 @@
 import s from "./footer.module.scss";
+import { useRouter } from "next/router";
 
 export default function Footer() {
+
+    if (useRouter().pathname === "/dao") return <></>
 
     return (
         <footer className={s.footer}>
