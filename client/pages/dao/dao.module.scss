@@ -23,3 +23,53 @@
         padding-bottom: 20px;
     }
 }
+
+.member {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    color: white;
+    padding: 20px;
+    font-size: 12px;
+    h2 {
+        font-weight: 300;
+    }
+}
+
+.proposal {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    font-size: 12px;
+    color: white;
+    .hex {
+        text-align: center;
+        font-weight: 300;
+        padding-bottom: 7px;
+        margin-bottom: 7px;
+        border-bottom: 1px solid white;
+    }
+    h2 {
+        font-weight: 300;
+    }
+
+    .voting {
+        border-top: 1px solid white;
+        padding-top: 14px;
+        margin-top: 7px;
+        display: flex;
+
+        .votes {
+            width: 50%;
+        }
+
+        .vote {
+            background-color: white;
+            width: 50%;
+            color: black;
+            font-weight: 300;
+            font-size: 16px;
+        }
+    }
+}

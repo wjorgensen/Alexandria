@@ -17,19 +17,31 @@
 
             .slide {
                 min-width: 0;
-                flex: 0 0 33%;
                 padding-left: var(--slide-spacing);
 
                 .number {
-                    font-size: 4rem;
-                    font-weight: 600;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    height: 120px;
+                    height: initial;
                     background-color: #295267;
-                    color: white;
                 }
+            }
+
+            .quarter {
+                flex: 0 0 25%;
+            }
+
+            .third {
+                flex: 0 0 33%;
+            }
+
+            .half {
+                flex: 0 0 50%;
+            }
+
+            .full {
+                flex: 0 0 100%;
             }
         }
 
