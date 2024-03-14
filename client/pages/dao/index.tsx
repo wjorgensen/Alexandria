@@ -82,16 +82,46 @@ export default function Dao() {
         })
     }
 
+    const monies = [
+        {
+            reason: "maintenance",
+            to: "0x0000000000",
+            value: 100,
+            creator: "0x1111111111",
+            votes: 0
+        },
+        {
+            reason: "acquisition",
+            to: "0x0000000000",
+            value: 100,
+            creator: "0x1111111111",
+            votes: 0
+        }
+    ]
+
+    function monetary(): JSX.Element[]{
+        return monies.map((money, index) => {
+            return (
+                <div key={index} className={s.monetary}>
+                    <div className={s.value}>{money.value} ETH</div>
+                    <h2 className={s.reason}>{money.reason}</h2>
+                    <div className={s.addr}>
+                        <div className={s.to}>{money.to}</div>
+                        <div className={s.creator}>{money.creator}</div>
+                    </div>
+                    <div className={s.voting}>
+                        <div className={s.votes}>- {money.votes} votes</div>
+                        <button className={s.vote}>vote</button>
+                    </div>
+                </div>
+            )
+        })
+    }   
+
 
     return (
         <section className={s.dao}>
             <h1 className={s.librarians}>AL(eX)AN.DAO</h1>
-
-            {/* <Divider content={"bank"}/> */}
-            <div className={s.library}>
-
-            </div>
-
             <Divider content="members" />
             <div className={s.library}>
                 <Carousel slides={librarians()} options={OPTIONS} type="quarter"/> 
@@ -100,6 +130,11 @@ export default function Dao() {
             <Divider content="proposals" />
             <div className={s.library}>
                 <Carousel slides={entries()} options={OPTIONS} type="half" /> 
+            </div>
+
+            <Divider content="monetary" />
+            <div className={s.library}>
+                <Carousel slides={monetary()} options={OPTIONS} type="half" /> 
             </div>
         </section>
     );
