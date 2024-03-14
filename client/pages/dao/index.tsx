@@ -116,6 +116,8 @@ export default function Dao() {
 
     const [donation, setDonation] = useState<number>()
     async function donate() {
+        // @ts-ignore
+        await window.ethereum.enable();
         console.log("donating", donation);
         try {
             if (!donation || donation <= 0) {
