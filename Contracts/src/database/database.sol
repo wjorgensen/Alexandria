@@ -67,11 +67,6 @@ contract Database {
         s_entryByName[_entry.name].push(_entry.cid);
     }
 
-    //Searches by Name or Author and returns an array of Entry structs
-    //Search terms must be in lower case with no spaces and if there are numbers in 
-    //the original title leave them as numbers, for example "Farenheit 451" would 
-    //be converted to farenheit451
-    //Note: Will always return Name matches before Author matches
 
     /**
      * 

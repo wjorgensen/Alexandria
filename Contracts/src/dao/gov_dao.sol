@@ -8,9 +8,7 @@ contract AlexandriaDAO {
     uint256 private s_numOfBoardMembers;
     uint256 public s_bankValue;
     EntryProposal[] private s_entryProposals;
-    uint256 private s_numofDeletedEntryProposals;
     SpendMoney[] private s_spendMoneyProposals;
-    uint256 private s_numOfDeletedMoneyProposals;
     IDatabase private s_database;
     mapping(address => uint256) private s_votesForBoard;
     mapping(uint256 => bool) private s_exclusions;
@@ -24,7 +22,7 @@ contract AlexandriaDAO {
 
     event Donated(address donater, uint value);
 
-    event NewMaterialProposal(
+    event NewEntryProposal(
         Entry newEntry,
         uint256 arrayIndex,
         address sender
@@ -37,6 +35,7 @@ contract AlexandriaDAO {
     );
 
     event MoneySpendExecuted(address to, uint value);
+
 
     struct SpendMoney {
         string reason;
@@ -110,11 +109,11 @@ contract AlexandriaDAO {
      * 
      * @notice Adds an entry to be voted on. Only to be called by Board Members
      */
-    function addMaterial(
+    function addEntry(
         Entry calldata _newEntry
     ) external boardMember {
         s_entryProposals.push(EntryProposal(_newEntry, msg.sender, 1));
-        emit NewMaterialProposal(_newEntry, s_entryProposals.length - 1, msg.sender);
+        emit NewEntryProposal(_newEntry, s_entryProposals.length - 1, msg.sender);
     }
 
     /**
@@ -128,7 +127,7 @@ contract AlexandriaDAO {
     ) external boardMember {
         for (uint i; i < _newEntries.length; ++i) {
             s_entryProposals.push(EntryProposal(_newEntries[i], msg.sender, 1));
-            emit NewMaterialProposal(
+            emit NewEntryProposal(
                 _newEntries[i],
                 s_entryProposals.length - 1,
                 msg.sender
@@ -169,14 +168,12 @@ contract AlexandriaDAO {
             s_exclusions[_exclusionsInRange[i]] = true;
         }
 
-        // Vote on the range of proposals
         for (uint256 i = _arrayRangeStart; i < _arrayRangeEnd; i++) {
             if (!s_exclusions[i]) {
                 internalVoteOnProposal(i);
             }
         }
 
-        // Clear the exclusions mapping
         for (uint256 i = 0; i < _exclusionsInRange.length; i++) {
             delete s_exclusions[_exclusionsInRange[i]];
         }
@@ -293,7 +290,6 @@ contract AlexandriaDAO {
         }
     }
 
-    //add board members by vote 
     /**
      * 
      * @param _newMember Address of the new board member
@@ -309,4 +305,18 @@ contract AlexandriaDAO {
         }
         
     }
+
+    /**
+     * @notice Returns the current entry proposals
+     */
+    function getEntryProposals() external view returns (EntryProposal[] memory) {
+        return s_entryProposals;
+    }
+
+    /**
+     * @notice Returns the current spend money proposals
+     */
+    function getSpendMoneyProposals() external view returns (SpendMoney[] memory) {
+        return s_spendMoneyProposals;
+    } 
 }

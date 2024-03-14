@@ -11,7 +11,7 @@ contract Deploy is Script {
     Database private database;
 
     function run() public {
-        boardMembers.push(0xbA8C2947d12C34A4319D1edCbaE8B6F0736b4467);
+        //boardMembers.push();
         database = new Database();
         alexandriaDAO = new AlexandriaDAO(boardMembers, address(database));
         database.setDao(address(alexandriaDAO));
