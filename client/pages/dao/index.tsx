@@ -3,12 +3,34 @@ import { EmblaOptionsType } from 'embla-carousel'
 import s from "./dao.module.scss";
 import Carousel from "@/components/carousel/carousel";
 import Divider from "@/components/divider/divider";
+import { dbcontractABI } from "@/abi/db";
+import Web3 from "web3";
+import { DAOABI } from "@/abi/dao";
+const { Conflux, Drip } = require('js-conflux-sdk');
 
 export default function Dao() {
 
+    const web3 = new Web3(new Web3.providers.HttpProvider("https://evmtestnet.confluxrpc.com"));
+    const dbcontractaddress = '0x2689df809bc5735334bb873e1db1a143b2e639fa';
+    const dbcontract = new web3.eth.Contract(dbcontractABI, dbcontractaddress);
+
+    const daocontractaddress = "0xf3c4b26f6e92d2358dc66b99fd6cc3471b531071"
+    const daocontract = new web3.eth.Contract(DAOABI, daocontractaddress);
+
+    async function getproposals() {
+        try {
+            const res = await daocontract.methods.getEntryProposals().call();
+            console.log(res);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    getproposals();
+
+
     const [donation, setDonation] = useState<number>()
 
-    const OPTIONS: EmblaOptionsType = { align: 'start', loop: true}
+    const OPTIONS: EmblaOptionsType = { align: 'start', loop: true }
 
     const members = [
         {
@@ -23,7 +45,7 @@ export default function Dao() {
         }
     ]
 
-    function librarians(): JSX.Element[]{
+    function librarians(): JSX.Element[] {
         return members.map((member, index) => {
             return (
                 <div key={index} className={s.member}>
@@ -62,7 +84,7 @@ export default function Dao() {
         }
     ]
 
-    function entries(): JSX.Element[]{
+    function entries(): JSX.Element[] {
         return proposals.map((proposal, index) => {
             return (
                 <div key={index} className={s.proposal}>
@@ -101,7 +123,7 @@ export default function Dao() {
         }
     ]
 
-    function monetary(): JSX.Element[]{
+    function monetary(): JSX.Element[] {
         return monies.map((money, index) => {
             return (
                 <div key={index} className={s.monetary}>
@@ -118,7 +140,7 @@ export default function Dao() {
                 </div>
             )
         })
-    }   
+    }
 
 
     return (
@@ -129,25 +151,25 @@ export default function Dao() {
             <div className={s.bank}>
                 <h2>balance: 30 ETH</h2>
                 <div>
-                    <input type="number" value={donation} onChange={(e) => setDonation(parseInt(e.target.value))} 
-                    placeholder="donate"
+                    <input type="number" value={donation} onChange={(e) => setDonation(parseInt(e.target.value))}
+                        placeholder="donate"
                     />
                     <button className={s.vote}>donate</button>
                 </div>
             </div>
             <Divider content="members" />
             <div className={s.library}>
-                <Carousel slides={librarians()} options={OPTIONS} type="quarter"/> 
+                <Carousel slides={librarians()} options={OPTIONS} type="quarter" />
             </div>
 
             <Divider content="proposals" />
             <div className={s.library}>
-                <Carousel slides={entries()} options={OPTIONS} type="half" /> 
+                <Carousel slides={entries()} options={OPTIONS} type="half" />
             </div>
 
             <Divider content="monetary" />
             <div className={s.library}>
-                <Carousel slides={monetary()} options={OPTIONS} type="half" /> 
+                <Carousel slides={monetary()} options={OPTIONS} type="half" />
             </div>
         </section>
     );

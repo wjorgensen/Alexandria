@@ -50,8 +50,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                         ]
                     }
                 }
-            },
-            { $limit: 20 }, 
+            }, 
         ];
 
         const cursor = collection.aggregate(agg);

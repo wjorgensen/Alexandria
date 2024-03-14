@@ -22,6 +22,11 @@ export default function Index() {
   const [loading, setLoading] = useState(false)
   
   async function search(term: string) {
+    if (!term) {
+      console.log("no search term");
+      setResults(null);
+      return;
+    }
     setLoading(true);
     const uri = "/api/search?query=" + term;
     console.log(uri);
@@ -30,8 +35,23 @@ export default function Index() {
       const res = await fetch(uri);
       const { results } = await res.json();
       
-      if (results) {
+      if (results.length > 0) {
+        console.log("results", results);
         setResults(results);
+      } else {
+        console.log("no results");
+        setResults(
+          [
+            {
+              name: "no results",
+              author: "no results",
+              medium: "no results",
+              yearReleased: -1,
+              language: "no results",
+              cid: "/"
+            }
+          ]
+        )
       }
 
     } catch (e) {

@@ -25,7 +25,9 @@ export default function Navbar() {
     return (
         <nav className={s.nav}>
             <div>
-                <h1 className={s.alexandria}>AL(eX)ANDRIA</h1>
+                <Link href={"/"}>
+                    <h1 className={s.alexandria}>AL(eX)ANDRIA</h1>
+                </Link>
             </div>
             <div>
                 <a href="https://evmtestnet.confluxscan.net/address/0xb301186922d32b9af3d5a8078090e2184c41c246?tab=contract-viewer" target="_blank"><button>contract</button></a>
