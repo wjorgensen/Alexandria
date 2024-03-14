@@ -59,8 +59,41 @@ export default function Dao() {
         }
     }
 
+    const [monies, setMonies] = useState<any[]>([]);
+    async function getmonies() {
+        try {
+            const res = await daocontract.methods.getSpendMoneyProposals().call();
+            console.log(res);
+            const newmonies = []
+
+            for (let i = 0; i < res!.length; i++) {
+                console.log((res as any)[i].creator);
+                console.log((res as any)[i].votes);
+                console.log((res as any)[i]['0'].reason);
+                console.log((res as any)[i]['0'].to);
+                console.log((res as any)[i]['0'].value);
+                console.log("-------------------")
+
+                let newmoney = {
+                    creator: (res as any)[i].creator,
+                    votes: (res as any)[i].votes.toString(),
+                    reason: (res as any)[i]['0'].reason,
+                    to: (res as any)[i]['0'].to,
+                    value: (res as any)[i]['0'].value
+                }
+
+                newmonies.push(newmoney)
+            }
+
+            setMonies(newmonies);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
     useEffect(() => {
         getproposals();
+        getmonies();
     }, []);
 
 
@@ -93,33 +126,6 @@ export default function Dao() {
         })
     }
 
-    /* const proposals = [
-        {
-            maker: "0x0000000000",
-            votes: 0,
-            entry: {
-                name: "The Illiad",
-                author: "Homer",
-                medium: "poetry",
-                year: "100 Ad",
-                language: "greek",
-                cid: "Qm1234567890"
-            }
-        },
-        {
-            maker: "0x1111111111",
-            votes: 0,
-            entry: {
-                name: "The Odyssey",
-                author: "Homer",
-                medium: "poetry",
-                year: "100 AD",
-                language: "greek",
-                cid: "Qm1234567890"
-            }
-        }
-    ]*/
-
     function entries(): JSX.Element[] {
         return proposals.map((proposal, index) => {
             return (
@@ -128,9 +134,9 @@ export default function Dao() {
                     <div className={s.entry}>
                         <h2>{proposal.entry.name}</h2>
                         <p>{proposal.entry.author}</p>
-                        {/* <p>{proposal.entry.medium}</p>
-                        <p>{proposal.entry.year}</p>
-                        <p>{proposal.entry.language}</p> */}
+                        <p>{proposal.entry.medium}</p>
+                        {/* <p>{proposal.entry.year}</p> */}
+                       {/*  <p>{proposal.entry.language}</p> */}
                     </div>
                     <div className={s.voting}>
                         {/* <div className={s.maker}>{proposal.maker}</div> */}
@@ -142,7 +148,7 @@ export default function Dao() {
         })
     }
 
-    const monies = [
+    const moniesexample = [
         {
             reason: "maintenance",
             to: "0x0000000000",
@@ -160,7 +166,7 @@ export default function Dao() {
     ]
 
     function monetary(): JSX.Element[] {
-        return monies.map((money, index) => {
+        return moniesexample.map((money, index) => {
             return (
                 <div key={index} className={s.monetary}>
                     <div className={s.value}>{money.value} ETH</div>
