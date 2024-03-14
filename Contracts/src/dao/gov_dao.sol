@@ -9,6 +9,8 @@ contract AlexandriaDAO {
     uint256 public s_bankValue;
     EntryProposal[] private s_entryProposals;
     SpendMoney[] private s_spendMoneyProposals;
+    EntryProposal[] private s_deletedEntryProposals;
+    SpendMoney[] private s_deletedSpendMoneyProposals;
     IDatabase private s_database;
     mapping(address => uint256) private s_votesForBoard;
     mapping(uint256 => bool) private s_exclusions;
@@ -21,6 +23,7 @@ contract AlexandriaDAO {
     error TransactionFailed(bytes data);
 
     event Donated(address donater, uint value);
+    event MoneySpendExecuted(address to, uint value);
 
     event NewEntryProposal(
         Entry newEntry,
@@ -33,8 +36,6 @@ contract AlexandriaDAO {
         uint256 arrayIndex,
         address sender
     );
-
-    event MoneySpendExecuted(address to, uint value);
 
 
     struct SpendMoney {
@@ -122,7 +123,7 @@ contract AlexandriaDAO {
      * 
      * @notice Adds an array of entries to the database. Only to be called by Board Members
      */
-    function bulkAddMaterial(
+    function bulkAddEntries(
         Entry[] calldata _newEntries
     ) external boardMember {
         for (uint i; i < _newEntries.length; ++i) {
@@ -141,7 +142,7 @@ contract AlexandriaDAO {
      * 
      * @notice Allows board members to vote on adding a material to the database
      */
-    function voteAddMaterial(uint256 _arrayIndex) external boardMember {
+    function voteAddEntry(uint256 _arrayIndex) external boardMember {
         if (s_entryProposals[_arrayIndex].votes == 0) {
             revert AlreadyExecuted();
         }
@@ -159,7 +160,7 @@ contract AlexandriaDAO {
      * 
      * @notice Allows board members to vote on adding a range of materials to the database
      */ 
-    function voteBulkAddMaterial(
+    function voteBulkAddEntries(
         uint256 _arrayRangeStart,
         uint256 _arrayRangeEnd,
         uint256[] memory _exclusionsInRange
@@ -212,6 +213,7 @@ contract AlexandriaDAO {
         bool success = s_database.addEntry(temp);
 
         if (success) {
+            s_deletedEntryProposals.push(s_entryProposals[_arrayIndex]);
             delete s_entryProposals[_arrayIndex];
         } else {
             revert NotAbleToAddMaterial();
@@ -282,6 +284,7 @@ contract AlexandriaDAO {
 
         if (success) {
             s_bankValue -= s_spendMoneyProposals[_arrayIndex].value;
+            s_deletedSpendMoneyProposals.push(s_spendMoneyProposals[_arrayIndex]);
             emit MoneySpendExecuted( s_spendMoneyProposals[_arrayIndex].to, s_spendMoneyProposals[_arrayIndex].value);
             delete s_spendMoneyProposals[_arrayIndex];
         }
@@ -319,4 +322,18 @@ contract AlexandriaDAO {
     function getSpendMoneyProposals() external view returns (SpendMoney[] memory) {
         return s_spendMoneyProposals;
     } 
+
+    /**
+     * @notice Returns the executed entry proposals
+     */
+    function getExecutedEntryProposals() external view returns (EntryProposal[] memory) {
+        return s_deletedEntryProposals;
+    }
+
+    /**
+     * @notice Returns the executed spend money proposals
+     */
+    function getExecutedSpendMoneyProposals() external view returns (SpendMoney[] memory) {
+        return s_deletedSpendMoneyProposals;
+    }
 }
