@@ -17,6 +17,17 @@ export default function Dao() {
     const daocontractaddress = "0xf3c4b26f6e92d2358dc66b99fd6cc3471b531071"
     const daocontract = new web3.eth.Contract(DAOABI, daocontractaddress);
 
+    const [contractbalance, setContractbalance] = useState<any>();
+    async function getcontractbalance() {
+        try {
+            const res = await web3.eth.getBalance(daocontractaddress);
+            console.log(res);
+            setContractbalance(web3.utils.fromWei(res, 'ether'));
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
     const [proposals, setProposals] = useState<any[]>([]);
     async function getproposals() {
         try {
@@ -76,8 +87,6 @@ export default function Dao() {
         }
     ]
     const [monies, setMonies] = useState<any[]>([]);
-
-
     async function getmonies() {
         try {
             const res = await daocontract.methods.getSpendMoneyProposals().call();
@@ -112,6 +121,7 @@ export default function Dao() {
     useEffect(() => {
         getproposals();
         getmonies();
+        getcontractbalance();
     }, []);
 
     const [donation, setDonation] = useState<number>()
@@ -216,7 +226,7 @@ export default function Dao() {
 
             <Divider content="banking" />
             <div className={s.bank}>
-                <h2>balance: 30 ETH</h2>
+                <h2>balance: {contractbalance} ETH</h2>
                 <div>
                     <input type="number" value={donation} onChange={(e) => setDonation(parseInt(e.target.value))}
                         placeholder="donate"
