@@ -12,14 +12,14 @@ export default function Dao() {
 
     const members = [
         {
-            name: "Alex",
-            description: "the sun of ra",
-            link: "@alex"
+            name: "Wes",
+            description: "Co-founder of AL(eX)ANDRIA",
+            link: "@wezabis"
         },
         {
-            name: "Andria",
-            description: "the moon of ra",
-            link: "@andria"
+            name: "Saad",
+            description: "Co-founder of AL(eX)ANDRIA",
+            link: "@gi1lgamesh"
         }
     ]
 
