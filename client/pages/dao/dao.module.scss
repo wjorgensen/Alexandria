@@ -13,7 +13,7 @@
 
     
 
-    .library {
+    .library, .bank {
         width: 750px;
         display: flex;
         flex-direction: column;
@@ -21,6 +21,26 @@
         align-items: center;
         padding-top: 20px;
         padding-bottom: 20px;
+    }
+
+    .bank {
+        flex-direction: row;
+        justify-content: space-between;
+
+        input {
+            width: 220px;
+            border: 1px solid black;
+            background-color: transparent;
+            padding: 00px 20px;
+        }
+
+        button {
+            height: min-content;
+            background-color: #295267;
+            color: white;
+            padding: 0px 20px;
+            border: 1px solid black;
+        }
     }
 }
 

@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { EmblaOptionsType } from 'embla-carousel'
 import s from "./dao.module.scss";
 import Carousel from "@/components/carousel/carousel";
 import Divider from "@/components/divider/divider";
 
 export default function Dao() {
+
+    const [donation, setDonation] = useState<number>()
 
     const OPTIONS: EmblaOptionsType = { align: 'start', loop: true}
 
@@ -122,6 +124,17 @@ export default function Dao() {
     return (
         <section className={s.dao}>
             <h1 className={s.librarians}>AL(eX)AN.DAO</h1>
+
+            <Divider content="banking" />
+            <div className={s.bank}>
+                <h2>balance: 30 ETH</h2>
+                <div>
+                    <input type="number" value={donation} onChange={(e) => setDonation(parseInt(e.target.value))} 
+                    placeholder="donate"
+                    />
+                    <button className={s.vote}>donate</button>
+                </div>
+            </div>
             <Divider content="members" />
             <div className={s.library}>
                 <Carousel slides={librarians()} options={OPTIONS} type="quarter"/> 
