@@ -2,6 +2,7 @@
 
 ### directions to running locally
 \$ `cd client`  
+\- ensure you have MONGODB_URI set in your .env.local (this should be your mongodb database)  
 \$ `npm i`  
 \$ `npm run dev`
 
