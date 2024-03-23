@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import { Test } from "lib/forge-std/src/Test.sol";
+import { Test } from "contracts/lib/forge-std/src/Test.sol";
 import { Database } from "../src/database/database.sol";
 import { AlexandriaDAO } from "../src/dao/gov_dao.sol";
 

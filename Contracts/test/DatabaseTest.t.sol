@@ -1,6 +1,6 @@
 pragma solidity ^0.8.0;
 
-import "forge-std/Test.sol";
+import "contracts/lib/forge-std/src/Test.sol";
 import "../src/database/database.sol";
 
 contract DatabaseTest is Test {
