@@ -23,7 +23,6 @@ contract AlexandriaDAO {
 
     event Donated(address donater, uint value);
     event MoneySpendExecuted(address to, uint value);
-
     event NewEntryProposal(DAOEntry newEntry, uint256 arrayIndex);
 
     event NewSpendingProposal(
