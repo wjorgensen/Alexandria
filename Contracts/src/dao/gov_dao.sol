@@ -7,13 +7,12 @@ contract AlexandriaDAO {
     mapping(address => bool) internal s_boardMembers;
     uint256 private s_numOfBoardMembers;
     uint256 public s_bankValue;
-    EntryProposal[] private s_entryProposals;
+    DAOEntry[] private s_entryProposals;
     SpendMoney[] private s_spendMoneyProposals;
-    EntryProposal[] private s_deletedEntryProposals;
+    DAOEntry[] private s_deletedEntryProposals;
     SpendMoney[] private s_deletedSpendMoneyProposals;
     IDatabase private s_database;
     mapping(address => uint256) private s_votesForBoard;
-    mapping(uint256 => bool) private s_exclusions;
 
     error NotBoardMember();
     error AlreadyExecuted();
@@ -25,18 +24,12 @@ contract AlexandriaDAO {
     event Donated(address donater, uint value);
     event MoneySpendExecuted(address to, uint value);
 
-    event NewEntryProposal(
-        Entry newEntry,
-        uint256 arrayIndex,
-        address sender
-    );
+    event NewEntryProposal(DAOEntry newEntry, uint256 arrayIndex);
 
     event NewSpendingProposal(
         SpendMoney newSpendMoneyProposal,
-        uint256 arrayIndex,
-        address sender
+        uint256 arrayIndex
     );
-
 
     struct SpendMoney {
         string reason;
@@ -46,19 +39,13 @@ contract AlexandriaDAO {
         uint256 votes;
     }
 
-
-    //Before mainnet I need to combine these
-    struct Entry {
+    struct DAOEntry {
         string name;
         string author;
         string medium;
         uint256 yearReleased;
         string language;
         string cid;
-    }
-
-    struct EntryProposal {
-        Entry newEntry;
         address creator;
         uint256 votes;
     }
@@ -71,10 +58,10 @@ contract AlexandriaDAO {
     }
 
     /**
-     * 
+     *
      * @param _boardMembers First board members
      * @param _database Database address
-     * 
+     *
      * @notice Constructor sets the board members and the database address
      */
     constructor(address[] memory _boardMembers, address _database) {
@@ -107,83 +94,95 @@ contract AlexandriaDAO {
     }
 
     /**
-     * 
+     *
      * @param _newEntry Entry to be added to the database
-     * 
+     *
      * @notice Adds an entry to be voted on. Only to be called by Board Members
      */
-    function addEntry(
-        Entry calldata _newEntry
-    ) external boardMember {
-        s_entryProposals.push(EntryProposal(_newEntry, msg.sender, 1));
-        emit NewEntryProposal(_newEntry, s_entryProposals.length - 1, msg.sender);
+    function addEntry(IDatabase.Entry calldata _newEntry) external boardMember {
+        internalAddEntry(_newEntry);
     }
 
     /**
-     * 
+     *
      * @param _newEntries Array of entries to be added to the database
-     * 
+     *
      * @notice Adds an array of entries to the database. Only to be called by Board Members
      */
     function bulkAddEntries(
-        Entry[] calldata _newEntries
+        IDatabase.Entry[] calldata _newEntries
     ) external boardMember {
         for (uint i; i < _newEntries.length; ++i) {
-            s_entryProposals.push(EntryProposal(_newEntries[i], msg.sender, 1));
-            emit NewEntryProposal(
-                _newEntries[i],
-                s_entryProposals.length - 1,
-                msg.sender
-            );
+            internalAddEntry(_newEntries[i]);
         }
     }
 
     /**
      * 
-     * @param _arrayIndex Index of the proposal in the array of add material proposals
+     * @param _newEntry The new entry to be added to be voted on
      * 
+     * @notice Internal add entry implementation
+     */
+    function internalAddEntry(IDatabase.Entry calldata _newEntry) internal {
+        DAOEntry memory temp = DAOEntry(
+            _newEntry.name,
+            _newEntry.author,
+            _newEntry.medium,
+            _newEntry.yearReleased,
+            _newEntry.language,
+            _newEntry.cid,
+            msg.sender,
+            1
+        );
+        s_entryProposals.push(temp);
+        emit NewEntryProposal(temp, s_entryProposals.length - 1);
+    }
+
+    /**
+     *
+     * @param _arrayIndex Index of the proposal in the array of add material proposals
+     *
      * @notice Allows board members to vote on adding a material to the database
      */
     function voteAddEntry(uint256 _arrayIndex) external boardMember {
-        if (s_entryProposals[_arrayIndex].votes == 0) {
-            revert AlreadyExecuted();
-        }
-        s_entryProposals[_arrayIndex].votes++;
-        if (s_entryProposals[_arrayIndex].votes > s_numOfBoardMembers / 2) {
-            internalExecuteEntryAdd(_arrayIndex);
+        internalVoteOnProposal(_arrayIndex);
+    }
+
+    /**
+     *
+     * @param _arrayRangeStart The start of the range of proposals to vote on
+     * @param _arrayRangeEnd The end of the range of proposals to vote on
+     * @param _exclusionsInRange Any proposals in the range to exclude from voting
+     * @dev Exlcusions in range must be in ascending order
+     *
+     * @notice Allows board members to vote on adding a range of materials to the database
+     */
+    function voteBulkAddEntries(
+        uint256 _arrayRangeStart,
+        uint256 _arrayRangeEnd,
+        uint256[] calldata _exclusionsInRange
+    ) external boardMember {
+        require(_arrayRangeStart < _arrayRangeEnd, "Invalid range");
+
+        uint256 e;
+        uint256 exclusionsLength = _exclusionsInRange.length;
+
+        for (uint256 i = _arrayRangeStart; i < _arrayRangeEnd; i++) {
+            if (e < exclusionsLength && i == _exclusionsInRange[e]) {
+                e++;
+            } else {
+                internalVoteOnProposal(i);
+            }
         }
     }
 
     /**
      * 
-     * @param _arrayRangeStart The start of the range of proposals to vote on
-     * @param _arrayRangeEnd The end of the range of proposals to vote on
-     * @param _exclusionsInRange Any proposals in the range to exclude from voting
+     * @param _proposalIndex The index in the main storage array of the proposal to be voted on
      * 
-     * @notice Allows board members to vote on adding a range of materials to the database
-     */ 
-    function voteBulkAddEntries(
-        uint256 _arrayRangeStart,
-        uint256 _arrayRangeEnd,
-        uint256[] memory _exclusionsInRange
-    ) external boardMember {
-        for (uint256 i = 0; i < _exclusionsInRange.length; i++) {
-            s_exclusions[_exclusionsInRange[i]] = true;
-        }
-
-        for (uint256 i = _arrayRangeStart; i < _arrayRangeEnd; i++) {
-            if (!s_exclusions[i]) {
-                internalVoteOnProposal(i);
-            }
-        }
-
-        for (uint256 i = 0; i < _exclusionsInRange.length; i++) {
-            delete s_exclusions[_exclusionsInRange[i]];
-        }
-    }
-
+     * @notice Internal implementation of voting
+     */
     function internalVoteOnProposal(uint256 _proposalIndex) internal {
-
         if (s_entryProposals[_proposalIndex].votes == 0) {
             revert AlreadyExecuted();
         }
@@ -196,20 +195,19 @@ contract AlexandriaDAO {
     }
 
     /**
-     * 
+     *
      * @param _arrayIndex Index of the proposal in the array of add material proposals
-     * 
+     *
      * @notice Internal function to execute adding a material to the database
      */
     function internalExecuteEntryAdd(uint256 _arrayIndex) internal {
-
         IDatabase.Entry memory temp = IDatabase.Entry(
-            s_entryProposals[_arrayIndex].newEntry.name,
-            s_entryProposals[_arrayIndex].newEntry.author,
-            s_entryProposals[_arrayIndex].newEntry.medium,
-            s_entryProposals[_arrayIndex].newEntry.yearReleased,
-            s_entryProposals[_arrayIndex].newEntry.language,
-            s_entryProposals[_arrayIndex].newEntry.cid
+            s_entryProposals[_arrayIndex].name,
+            s_entryProposals[_arrayIndex].author,
+            s_entryProposals[_arrayIndex].medium,
+            s_entryProposals[_arrayIndex].yearReleased,
+            s_entryProposals[_arrayIndex].language,
+            s_entryProposals[_arrayIndex].cid
         );
 
         bool success = s_database.addEntry(temp);
@@ -223,17 +221,17 @@ contract AlexandriaDAO {
     }
 
     /**
-     * 
-     * @param _reason Reason for the spending proposal
-     * @param _to Who will receive the funds
-     * @param _value How much will be sent
-     * 
+     *
+     * @param _reason The reason for the money being spent
+     * @param _to Who the money is going to be sent to
+     * @param _value How much money is being sent
+     *
      * @notice Allows board members to propose spending money
      */
     function spendMoneyProposal(
         string calldata _reason,
         address _to,
-        uint256 _value
+        uint _value
     ) external boardMember {
         if (_value > s_bankValue) {
             revert NotEnoughFunds();
@@ -243,21 +241,26 @@ contract AlexandriaDAO {
             revert NoBurn();
         }
 
-        s_spendMoneyProposals.push(
-            SpendMoney(_reason, _to, _value, msg.sender, 1)
+        SpendMoney memory temp = SpendMoney(
+            _reason,
+            _to,
+            _value,
+            msg.sender,
+            1
         );
 
+        s_spendMoneyProposals.push(temp);
+
         emit NewSpendingProposal(
-            s_spendMoneyProposals[s_spendMoneyProposals.length - 1],
-            s_spendMoneyProposals.length - 1,
-            msg.sender
+            temp,
+            s_spendMoneyProposals.length - 1
         );
     }
 
     /**
-     * 
+     *
      * @param _arrayIndex Index of the proposal in the array of spend money proposals
-     * 
+     *
      * @notice Allows board members to vote on spending money
      */
     function voteMoneySpend(uint256 _arrayIndex) external boardMember {
@@ -274,9 +277,9 @@ contract AlexandriaDAO {
     }
 
     /**
-     * 
+     *
      * @param _arrayIndex Index of the proposal in the array of spend money proposals
-     * 
+     *
      * @notice Internal function to execute spending money
      */
     function internalExecuteMoneySpend(uint256 _arrayIndex) internal {
@@ -286,19 +289,23 @@ contract AlexandriaDAO {
 
         if (success) {
             s_bankValue -= s_spendMoneyProposals[_arrayIndex].value;
-            s_deletedSpendMoneyProposals.push(s_spendMoneyProposals[_arrayIndex]);
-            emit MoneySpendExecuted( s_spendMoneyProposals[_arrayIndex].to, s_spendMoneyProposals[_arrayIndex].value);
+            s_deletedSpendMoneyProposals.push(
+                s_spendMoneyProposals[_arrayIndex]
+            );
+            emit MoneySpendExecuted(
+                s_spendMoneyProposals[_arrayIndex].to,
+                s_spendMoneyProposals[_arrayIndex].value
+            );
             delete s_spendMoneyProposals[_arrayIndex];
-        }
-        else{
+        } else {
             revert TransactionFailed(data);
         }
     }
 
     /**
-     * 
+     *
      * @param _newMember Address of the new board member
-     * 
+     *
      * @notice Allows board members to vote on adding a new board member
      */
     function addBoardMember(address _newMember) external boardMember {
@@ -308,34 +315,45 @@ contract AlexandriaDAO {
             s_boardMembers[_newMember] = true;
             s_numOfBoardMembers++;
         }
-        
     }
 
     /**
      * @notice Returns the current entry proposals
      */
-    function getEntryProposals() external view returns (EntryProposal[] memory) {
+    function getEntryProposals() external view returns (DAOEntry[] memory) {
         return s_entryProposals;
     }
 
     /**
      * @notice Returns the current spend money proposals
      */
-    function getSpendMoneyProposals() external view returns (SpendMoney[] memory) {
+    function getSpendMoneyProposals()
+        external
+        view
+        returns (SpendMoney[] memory)
+    {
         return s_spendMoneyProposals;
-    } 
+    }
 
     /**
      * @notice Returns the executed entry proposals
      */
-    function getExecutedEntryProposals() external view returns (EntryProposal[] memory) {
+    function getExecutedEntryProposals()
+        external
+        view
+        returns (DAOEntry[] memory)
+    {
         return s_deletedEntryProposals;
     }
 
     /**
      * @notice Returns the executed spend money proposals
      */
-    function getExecutedSpendMoneyProposals() external view returns (SpendMoney[] memory) {
+    function getExecutedSpendMoneyProposals()
+        external
+        view
+        returns (SpendMoney[] memory)
+    {
         return s_deletedSpendMoneyProposals;
     }
 }
