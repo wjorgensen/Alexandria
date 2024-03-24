@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: SEE LICENSE IN LICENSE
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 import { Script } from "../lib/forge-std/src/Script.sol";
-import { AlexandriaDAO } from "../src/dao/gov_dao.sol";
-import { Database } from "../src/database/database.sol";
+import { AlexandriaDAO } from "../src/gov_dao.sol";
+import { Database } from "../src/database.sol";
 
 contract Deploy is Script {
     address[] private boardMembers = new address[](1);
@@ -11,7 +11,7 @@ contract Deploy is Script {
     Database private database;
 
     function run() public {
-        //boardMembers.push();
+        boardMembers.push(address(0));
         database = new Database();
         alexandriaDAO = new AlexandriaDAO(boardMembers, address(database));
         database.setDao(address(alexandriaDAO));

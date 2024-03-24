@@ -8,7 +8,6 @@ contract Database {
     mapping(string => string[]) private s_entryByName;
     mapping(string => uint256) private s_entryByCID;
 
-
     address s_dao;
     address s_owner;
 
@@ -31,6 +30,18 @@ contract Database {
      */
     constructor(){
         s_owner = msg.sender;
+
+        //Instert first entry so checking for already instered CID's works
+        s_entries.push(
+            Entry(
+                "Genesis",
+                "Wes Jorgensen",
+                "Bits",
+                2024,
+                "English",
+                "library-of-alexandria.xyz"
+            )
+        );
     }
 
     /**
