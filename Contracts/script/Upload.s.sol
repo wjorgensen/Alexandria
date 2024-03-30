@@ -10,7 +10,7 @@ contract Upload is Script{
 
     function run() public {
         string memory jsonData = vm.readFile("upload.json");
-        entries = abi.decode(vm.parseJson(jsonData), (IDatabase.Entry[]));
+        //entries = abi.decode(vm.parseJson(jsonData), (IDatabase.Entry[]));
 
         alexandriaDAO = AlexandriaDAO(daoAddress);
 
